@@ -3,11 +3,12 @@
         <p v-if="error" class="text">
             {{msg}}
         </p>
-        <video v-else ref="video" poster=""></video>
+        <video v-else ref="video"  @loadedmetadata="playFace" poster=""></video>
     </div>
 </template>
 
 <script>
+import {drawFace, initFaceDetector, playFace, loadFaceJS} from './utils'
 export default {
     props: {
         promiseOptions: {
@@ -38,11 +39,14 @@ export default {
             error: false,
             msg: '获取权限失败！',
             stream: null,
-            recordTimer: null
+            recordTimer: null,
+            faceOptions: null
         }
     },
     mounted: async function () {
         let {promiseOptions, record} = this
+        await loadFaceJS()
+        await this.initFaceDetector()
         let stream = await this.getPromise(promiseOptions)
         if (stream) {
             this.stream = stream
@@ -52,7 +56,7 @@ export default {
                 const options = {mimeType: 'video/webm;codecs=vp9'};
                 this.mediaRecorder = new MediaRecorder(stream, options)
                 this.mediaRecorder.addEventListener('dataavailable', this.startRecord)
-                this.mediaRecorder.start(10)
+                this.mediaRecorder.start(200)
                 this.recordTimer = setInterval(() => {
                     this.mediaRecorder.stop()
                 }, record.duration * 1000)
@@ -65,6 +69,9 @@ export default {
         clearInterval(this.recordTimer)
     },
     methods: {
+        playFace,
+        initFaceDetector,
+        drawFace, // 获取视频截图
         startRecord: function (result) {
             if (result.data.size > 0) {
                 this.recordedChunks.push(result.data)
@@ -74,7 +81,7 @@ export default {
                     let reader = new FileReader();
                     reader.onload = () => {
                         this.$emit('recordCallback', reader.result)
-                        this.mediaRecorder.start(10)
+                        this.mediaRecorder.start(200)
                         this.recordedChunks = []
                     }
                     reader.readAsDataURL(blob, 'utf-8')
