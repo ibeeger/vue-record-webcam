@@ -3,7 +3,7 @@
         <p v-if="error" class="text">
             {{msg}}
         </p>
-        <video v-else ref="video"  @loadedmetadata="playFace" poster=""></video>
+        <video v-else ref="video"  @loadedmetadata="playFace" :poster="placeholder"></video>
     </div>
 </template>
 
