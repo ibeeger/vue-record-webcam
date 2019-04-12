@@ -43,10 +43,10 @@ export const playFace = async function () {
   let con = result instanceof Array ? result : [result]
   if (result.length) {
     if (con.length >= 2) {
-      console.log('多个人了')
+      this.$emit('faceCallback', {num: con.length})
     }
   } else {
-    console.log('离开了')
+    this.$emit('faceCallback', {num: 0})
   }
   setTimeout(() => this.playFace())
 }

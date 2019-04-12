@@ -26,7 +26,15 @@ props: {
 ```
 
 ```javascript
- <Cam ref="cam" :record="{duration: 10}" @recordCallback="upload" />
+ <Cam ref="cam" ref='cam' :record="{duration: 10}" @recordCallback="upload" @faceCallback="getFaceNum" />
+```
+
+### method
+
+```javascript
+    this.$refs.cam.drawFace()   // 返回当前画面的图片 base64        
+    recordCallback // 如果录制的话会通过这个透传 base64         
+    faceCallback // 检测结果有变化的时候回调出来 object
 ```
 
 
